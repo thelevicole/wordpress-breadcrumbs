@@ -2,17 +2,18 @@
 
 ## Usage
 Start by including the `Breadcrumbs.php` into your themes `functions.php` file.
+
 ```php
 <?php
-	require_once 'path/to/Breadcrumbs.php`;
-	...
+require_once 'path/to/Breadcrumbs.php';
+...
 ```
 Now you can use the `get_breadcrumbs()` function.
 
 ```php
-	<div class="breadcrumb-container">
-		<?php get_breadcrumbs(); ?>
-	</div>
+<div class="breadcrumb-container">
+	<?php get_breadcrumbs(); ?>
+</div>
 ```
 
 ## Options
