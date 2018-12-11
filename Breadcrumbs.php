@@ -28,32 +28,41 @@ class Breadcrumbs {
 
 	/**
 	 * Renderer
+	 * 
+	 * @param	boolean	$echo	Determin whether to return the element or echo
 	 */
-	function render() {
+	function render( $echo = true ) {
 
 		// Render only if not the front page
 		if ( !is_front_page() ) {
 
 			// Open the list
-			echo '<ul id="' . $this->args[ 'id' ] . '" class="' . $this->args[ 'class' ] . '">';
+			$breadcrumbs = '<ul id="' . $this->args[ 'id' ] . '" class="' . $this->args[ 'class' ] . '">';
 
-				echo $this->get_front();
-				echo $this->get_archive();
-				echo $this->get_taxonomy();
-				echo $this->get_single();
-				echo $this->get_category();
-				echo $this->get_page();
-				echo $this->get_tag();
-				echo $this->get_day();
-				echo $this->get_month();
-				echo $this->get_year();
-				echo $this->get_author();
-				echo $this->get_paged();
-				echo $this->get_search();
-				echo $this->get_404();
+				$breadcrumbs .= $this->get_front();
+				$breadcrumbs .= $this->get_archive();
+				$breadcrumbs .= $this->get_taxonomy();
+				$breadcrumbs .= $this->get_single();
+				$breadcrumbs .= $this->get_category();
+				$breadcrumbs .= $this->get_page();
+				$breadcrumbs .= $this->get_tag();
+				$breadcrumbs .= $this->get_day();
+				$breadcrumbs .= $this->get_month();
+				$breadcrumbs .= $this->get_year();
+				$breadcrumbs .= $this->get_author();
+				$breadcrumbs .= $this->get_paged();
+				$breadcrumbs .= $this->get_search();
+				$breadcrumbs .= $this->get_404();
 
 			// Close the list
-			echo '</ul>';
+			$breadcrumbs .= '</ul>';
+
+			// Send to user
+			if ( $echo ) {
+				echo $breadcrumbs;
+			} else {
+				return $breadcrumbs
+			}
 
 		}
 
@@ -66,7 +75,7 @@ class Breadcrumbs {
 	 * @return	string
 	 */
 	function class_inliner( array $classes ) {
-		return trim( preg_replace( '/\s+/', ' ', implode( $classes, ' ' ) ) );
+		return trim( preg_replace( '/\s+/', ' ', implode( array_map('sanitize_html_class', $classes), ' ' ) ) );
 	}
 
 	/**
@@ -77,8 +86,12 @@ class Breadcrumbs {
 	 */
 	function separator( $class = null ) {
 		if ( !empty( $this->args[ 'separator' ] ) ) {
+			$classes = [
+				'separator',
+				$class ? ' separator-' . $class : ''
+			];
 			ob_start(); ?>
-				<li class="separator<?php echo $class ? ' separator-' . $class : ''; ?>"><?php echo $this->args[ 'separator' ]; ?></li>
+				<li class="<?php echo $this->class_inliner( $classes ); ?>"><?php echo $this->args[ 'separator' ]; ?></li>
 			<?php return ob_get_clean();
 		}
 	}
@@ -93,8 +106,8 @@ class Breadcrumbs {
 	function current($title, $slug = null) {
 		$slug = sanitize_html_class( $slug ?: sanitize_title( $title ) );
 		ob_start(); ?>
-			<li class="item-current item-<?php echo $slug; ?>">
-				<strong class="bread-current bread-<?php echo $slug; ?>" title="<?php echo $title; ?>"><?php echo $title; ?></strong>
+			<li class="<?php echo $this->class_inliner( [ 'item-current', 'item-' . $slug ] ); ?>">
+				<strong class="<?php echo $this->class_inliner( [ 'bread-current', 'bread-' . $slug ] ); ?>" title="<?php echo $title; ?>"><?php echo $title; ?></strong>
 			</li>
 		<?php return ob_get_clean();
 	}
@@ -107,10 +120,10 @@ class Breadcrumbs {
 	 * @return	string
 	 */
 	function parent($title, $link, $slug = null) {
-		$slug = sanitize_html_class( $slug ?: sanitize_title( $title ) );
+		$slug = $slug ?: sanitize_title( $title );
 		ob_start(); ?>
-			<li class="item-link item-<?php echo $slug; ?>">
-				<a class="bread-link bread-<?php echo $slug; ?>" href="<?php echo $link; ?>" title="<?php echo $title; ?>">
+			<li class="<?php echo $this->class_inliner( [ 'item-link', 'item-' . $slug ] ); ?>">
+				<a class="<?php echo $this->class_inliner( [ 'bread-link', 'bread-' . $slug ] ); ?>" href="<?php echo $link; ?>" title="<?php echo $title; ?>">
 					<?php echo $title; ?>
 				</a>
 			</li>
@@ -411,12 +424,14 @@ class Breadcrumbs {
 
 /**
  * Render custom breadcrumbs for the current page
+ * 
  * @param	array	$options
+ * @param	boolean	$echo		Determin whether to print or echo the breadcrumbs
  * @return	void
  */
-function get_breadcrumbs( $options = [] ) {
+function get_breadcrumbs( $options = [], $echo = true ) {
 	$breadcrumbs = new Breadcrumbs( $options );
-	$breadcrumbs->render();
+	$breadcrumbs->render( $echo );
 }
 
 
