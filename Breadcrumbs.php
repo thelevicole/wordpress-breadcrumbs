@@ -61,7 +61,7 @@ class Breadcrumbs {
 			if ( $echo ) {
 				echo $breadcrumbs;
 			} else {
-				return $breadcrumbs
+				return $breadcrumbs;
 			}
 
 		}
